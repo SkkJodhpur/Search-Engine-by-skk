@@ -1,3 +1,0 @@
-google-search-results
-langchain-community
-gradio
