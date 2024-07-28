@@ -2,7 +2,7 @@ import os
 import gradio as gr
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_community.agent_toolkits.load_tools import load_tools
-from langchain.agents import AgentType, initialize_agen
+from langchain.agents import AgentType, initialize_agent
 
 
 # Set up Google API keys from environment variables
