@@ -1,6 +1,5 @@
 import os
 import gradio as gr
-from google.colab import userdata
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain.agents import AgentType, initialize_agent, load_tools
 
