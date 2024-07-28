@@ -44,7 +44,14 @@ agent = create_react_agent(tools=tools, llm=llm, prompt=prompt)
 
 # Function to run the agent
 def search(query):
-    output = agent.invoke({"query": query})
+    inputs = {
+        "query": query,
+        "agent_scratchpad": "",  # Initial empty scratchpad
+        "tools": tools,
+        "tool_names": ", ".join([tool.name for tool in tools]),
+        "intermediate_steps": []  # Initial empty intermediate steps
+    }
+    output = agent.invoke(inputs)
     return output
 
 # Create the Gradio interface
