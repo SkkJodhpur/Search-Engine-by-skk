@@ -9,8 +9,7 @@ from langchain.prompts import PromptTemplate
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 SERPER_API_KEY = os.getenv('SERPER_API_KEY')
 
-# Initialize embeddings and language model
-gemini_embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+# Initialize language model
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
 
 # Load tools
@@ -18,12 +17,11 @@ tools = load_tools(["serpapi", "llm-math"], llm=llm, serpapi_api_key=SERPER_API_
 
 # Define a prompt using PromptTemplate with required variables
 prompt = PromptTemplate(
-    input_variables=["query", "agent_scratchpad", "tools", "tool_names"],
+    input_variables=["query", "tools", "tool_names"],
     template=(
         "You are a helpful assistant that answers questions based on the provided tools.\n"
         "Tools available: {tool_names}\n"
         "Current tools: {tools}\n"
-        "Scratchpad: {agent_scratchpad}\n"
         "Question: {query}"
     )
 )
@@ -35,10 +33,8 @@ agent = create_react_agent(tools=tools, llm=llm, prompt=prompt)
 def search(query):
     inputs = {
         "query": query,
-        "agent_scratchpad": "",  # Initial empty scratchpad
         "tools": tools,
         "tool_names": ", ".join([tool.name for tool in tools]),
-        "intermediate_steps": []  # Initial empty intermediate steps
     }
     
     try:
@@ -60,8 +56,7 @@ def search(query):
         # Print the exception and the inputs for debugging
         print(f"Error: {e}")
         print("Inputs:", inputs)
-        return "I'm sorry, I couldn't find the answer to your query."
-
+        return str(e)
 
 # Create the Gradio interface
 iface = gr.Interface(
