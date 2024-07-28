@@ -18,7 +18,6 @@ gemini_embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
 
 # Load tools
-# Ensure that you are loading the tools correctly
 tools = load_tools(["serpapi", "llm-math"], llm=llm, serpapi_api_key=SERPER_API_KEY)
 
 # Debug: Print tools to verify their structure
@@ -41,7 +40,7 @@ prompt = PromptTemplate(
 )
 
 # Initialize the agent with the prompt
-agent = create_react_agent(tools, llm, prompt)
+agent = create_react_agent(tools=tools, llm=llm, prompt=prompt)
 
 # Function to run the agent
 def search(query):
