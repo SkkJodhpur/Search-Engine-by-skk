@@ -46,18 +46,22 @@ def search(query):
         print("Inputs to the agent:", inputs)
         
         # Attempt to get the answer from the LLM
-        output = agent.invoke(inputs)
+        result = agent.run(inputs)
         
         # Debug: Print output
-        print("Output from the agent:", output)
+        print("Output from the agent:", result)
         
-        return output
+        # Extract the relevant information from the result
+        hometown = result.split("\n")[0].strip()
+        
+        return hometown
 
     except Exception as e:
         # Print the exception and the inputs for debugging
         print(f"Error: {e}")
         print("Inputs:", inputs)
-        return str(e)
+        return "I'm sorry, I couldn't find the answer to your query."
+
 
 # Create the Gradio interface
 iface = gr.Interface(
