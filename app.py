@@ -4,6 +4,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from langchain_community.agent_toolkits.load_tools import load_tools
 from langchain.agents import create_react_agent
 from langchain.prompts import PromptTemplate
+import requests
 
 # Set up Google API keys from environment variables
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
@@ -31,6 +32,17 @@ prompt = PromptTemplate(
 # Initialize the agent with the prompt
 agent = create_react_agent(tools=tools, llm=llm, prompt=prompt)
 
+# Function to search Google using SERP API
+def google_search(query):
+    response = requests.get(
+        f"https://api.serpapi.com/search.json?q={query}&api_key={SERPER_API_KEY}"
+    )
+    results = response.json()
+    # Extract relevant information from the results
+    if "organic_results" in results:
+        return results["organic_results"][0]["snippet"]  # Return the snippet of the first result
+    return "No results found."
+
 # Function to run the agent
 def search(query):
     inputs = {
@@ -50,6 +62,11 @@ def search(query):
         
         # Debug: Print output
         print("Output from the agent:", output)
+        
+        # Check if output is empty or not generated
+        if not output or "error" in output.lower():
+            print("LLM did not generate a valid output, searching Google...")
+            output = google_search(query)
         
         return output
 
