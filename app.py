@@ -51,8 +51,14 @@ def search(query):
         "tool_names": ", ".join([tool.name for tool in tools]),
         "intermediate_steps": []  # Initial empty intermediate steps
     }
-    output = agent.invoke(inputs)
-    return output
+    try:
+        output = agent.invoke(inputs)
+        return output
+    except Exception as e:
+        # Print the exception and the inputs for debugging
+        print(f"Error: {e}")
+        print("Inputs:", inputs)
+        return str(e)
 
 # Create the Gradio interface
 iface = gr.Interface(
