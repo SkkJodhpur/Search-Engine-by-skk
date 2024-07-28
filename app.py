@@ -19,8 +19,8 @@ llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
 # Load tools
 tools = load_tools(["serpapi", "llm-math"], llm=llm, serpapi_api_key=SERPER_API_KEY)
 
-# Initialize the agent using the new method
-agent = create_react_agent(tools, llm, verbose=True)
+# Initialize the agent without the verbose argument
+agent = create_react_agent(tools, llm)
 
 # Function to run the agent
 def search(query):
