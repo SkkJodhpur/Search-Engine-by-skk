@@ -4,6 +4,8 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from langchain_community.agent_toolkits.load_tools import load_tools
 from langchain.agents import create_react_agent
 from langchain.prompts import PromptTemplate
+from langchain.tools import Tool
+import ast
 
 # Set up Google API keys from environment variables
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
@@ -44,6 +46,16 @@ def custom_output_parser(text):
         return {"tool_code": tool_code}
     return {"text": text}
 
+# Function to execute tool code
+def execute_tool_code(tool_code):
+    local_vars = {}
+    try:
+        # Extract the function call from the tool code
+        exec(tool_code, {}, local_vars)
+    except Exception as e:
+        return f"Error executing tool code: {e}"
+    return local_vars.get('result', 'No result from tool execution.')
+
 # Function to run the agent and fallback to search tool if needed
 def search(query):
     inputs = {
@@ -65,9 +77,8 @@ def search(query):
         # If not a valid answer, proceed with tool code execution
         if "tool_code" in parsed_output:
             tool_code = parsed_output["tool_code"]
-            exec_globals = {"search": tools[0].func}  # Assuming 'search' is the first tool
-            exec(tool_code, exec_globals)
-            return exec_globals.get("result", "Executed tool code.")
+            result = execute_tool_code(tool_code)
+            return result
 
         return "No valid answer found."
 
