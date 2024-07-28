@@ -20,13 +20,6 @@ llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
 # Load tools
 tools = load_tools(["serpapi", "llm-math"], llm=llm, serpapi_api_key=SERPER_API_KEY)
 
-# Debug: Print tools to verify their structure
-print("Loaded tools:", tools)
-
-# Check if tools are loaded correctly
-if not all(hasattr(tool, 'name') and hasattr(tool, 'description') for tool in tools):
-    raise ValueError("Loaded tools are not in the expected format.")
-
 # Define a prompt using PromptTemplate with required variables
 prompt = PromptTemplate(
     input_variables=["query", "agent_scratchpad", "tools", "tool_names"],
