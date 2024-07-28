@@ -5,7 +5,6 @@ from langchain_community.agent_toolkits.load_tools import load_tools
 from langchain.agents import create_react_agent
 from langchain.prompts import PromptTemplate
 from langchain.tools import Tool
-import ast
 
 # Set up Google API keys from environment variables
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
