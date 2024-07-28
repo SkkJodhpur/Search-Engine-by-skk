@@ -18,7 +18,12 @@ gemini_embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
 
 # Load tools
+# Ensure that you are loading the tools correctly
 tools = load_tools(["serpapi", "llm-math"], llm=llm, serpapi_api_key=SERPER_API_KEY)
+
+# Check if tools are loaded correctly
+if not all(hasattr(tool, 'name') and hasattr(tool, 'description') for tool in tools):
+    raise ValueError("Loaded tools are not in the expected format.")
 
 # Define a prompt using PromptTemplate with required variables
 prompt = PromptTemplate(
