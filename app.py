@@ -3,6 +3,7 @@ import gradio as gr
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_community.agent_toolkits.load_tools import load_tools
 from langchain.agents import create_react_agent
+from langchain.prompts import PromptTemplate  # Import PromptTemplate
 
 # Set up Google API keys from environment variables
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
@@ -19,8 +20,11 @@ llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
 # Load tools
 tools = load_tools(["serpapi", "llm-math"], llm=llm, serpapi_api_key=SERPER_API_KEY)
 
-# Define a prompt for the agent
-prompt = "You are a helpful assistant that answers questions based on the provided tools."
+# Define a prompt using PromptTemplate
+prompt = PromptTemplate(
+    input_variables=["query"],
+    template="You are a helpful assistant that answers questions based on the provided tools. Question: {query}"
+)
 
 # Initialize the agent with the prompt
 agent = create_react_agent(tools, llm, prompt)
