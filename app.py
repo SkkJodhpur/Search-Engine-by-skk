@@ -66,7 +66,7 @@ def search(query):
         parsed_output = custom_output_parser(output)
         
         # Check if the output is a valid answer
-        if parsed_output["text"].strip() and "I can answer that question" not in parsed_output["text"]:
+        if parsed_output.get("text") and parsed_output["text"].strip():
             return parsed_output["text"]
 
         # If not a valid answer, proceed with tool code execution
