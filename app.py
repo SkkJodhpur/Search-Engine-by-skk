@@ -4,9 +4,6 @@ from google.colab import userdata
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain.agents import AgentType, initialize_agent, load_tools
 
-# Install necessary packages
-!pip install google-search-results
-!pip install -U langchain-community
 
 # Set up Google API keys
 GOOGLE_API_KEY = userdata.get('GOOGLE_API_KEY')
