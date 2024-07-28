@@ -37,7 +37,7 @@ agent = create_react_agent(tools=tools, llm=llm, prompt=prompt)
 
 # Custom output parsing function
 def custom_output_parser(text):
-    if "tool_code" in text:
+    if "```tool_code" in text:
         tool_code_start = text.find("```tool_code") + len("```tool_code")
         tool_code_end = text.find("```", tool_code_start)
         tool_code = text[tool_code_start:tool_code_end].strip()
