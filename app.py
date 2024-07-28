@@ -4,7 +4,6 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from langchain_community.agent_toolkits.load_tools import load_tools
 from langchain.agents import create_react_agent
 from langchain.prompts import PromptTemplate
-from langchain_core.output_parsers.base import BaseOutputParser
 
 # Set up Google API keys from environment variables
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
@@ -43,18 +42,14 @@ prompt = PromptTemplate(
 # Initialize the agent with the prompt
 agent = create_react_agent(tools=tools, llm=llm, prompt=prompt)
 
-# Custom output parser
-class CustomOutputParser(BaseOutputParser):
-    def parse(self, text):
-        if "tool_code" in text:
-            tool_code_start = text.find("```tool_code") + len("```tool_code")
-            tool_code_end = text.find("```", tool_code_start)
-            tool_code = text[tool_code_start:tool_code_end].strip()
-            return {"tool_code": tool_code}
-        return {"text": text}
-
-# Assign the custom output parser to the agent
-agent.output_parser = CustomOutputParser()
+# Custom output parsing function
+def custom_output_parser(text):
+    if "tool_code" in text:
+        tool_code_start = text.find("```tool_code") + len("```tool_code")
+        tool_code_end = text.find("```", tool_code_start)
+        tool_code = text[tool_code_start:tool_code_end].strip()
+        return {"tool_code": tool_code}
+    return {"text": text}
 
 # Function to run the agent
 def search(query):
@@ -67,13 +62,15 @@ def search(query):
     }
     try:
         output = agent.invoke(inputs)
-        # Process tool_code if exists
-        if "tool_code" in output:
-            tool_code = output["tool_code"]
+        # Process the output with the custom output parser
+        parsed_output = custom_output_parser(output)
+        # Execute tool code if exists
+        if "tool_code" in parsed_output:
+            tool_code = parsed_output["tool_code"]
             exec_globals = {"search": tools[0].func}  # Assuming 'search' is the first tool
             exec(tool_code, exec_globals)
             return exec_globals.get("result", "Executed tool code.")
-        return output["text"]
+        return parsed_output["text"]
     except Exception as e:
         # Print the exception and the inputs for debugging
         print(f"Error: {e}")
