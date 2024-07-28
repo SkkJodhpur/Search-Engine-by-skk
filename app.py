@@ -51,7 +51,7 @@ def custom_output_parser(text):
         return {"tool_code": tool_code}
     return {"text": text}
 
-# Function to run the agent
+# Function to run the agent and fallback to search tool if needed
 def search(query):
     inputs = {
         "query": query,
@@ -61,16 +61,23 @@ def search(query):
         "intermediate_steps": []  # Initial empty intermediate steps
     }
     try:
+        # Attempt to get the answer from the LLM
         output = agent.invoke(inputs)
-        # Process the output with the custom output parser
         parsed_output = custom_output_parser(output)
-        # Execute tool code if exists
+        
+        # Check if the output is a valid answer
+        if parsed_output["text"].strip() and "I can answer that question" not in parsed_output["text"]:
+            return parsed_output["text"]
+
+        # If not a valid answer, proceed with tool code execution
         if "tool_code" in parsed_output:
             tool_code = parsed_output["tool_code"]
             exec_globals = {"search": tools[0].func}  # Assuming 'search' is the first tool
             exec(tool_code, exec_globals)
             return exec_globals.get("result", "Executed tool code.")
-        return parsed_output["text"]
+
+        return "No valid answer found."
+
     except Exception as e:
         # Print the exception and the inputs for debugging
         print(f"Error: {e}")
